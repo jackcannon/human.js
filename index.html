@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Human.js</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+  </head>
+  <body>
+    
+    <div id="display"></div>
+    <div id="controls">
+      <textarea id="input"></textarea>
+      <input type="button" value="Go" id="go"></input>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="https://raw.github.com/caolan/async/master/lib/async.js"></script>
+    <script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+    <script src="js/human.js"></script>
+
+    <script>
+      $('#go').click(function() {
+        eval($('#input').val());
+      })
+    </script>
+
+  </body>
+</html>
