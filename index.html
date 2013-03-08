@@ -18,9 +18,11 @@
     <script src="js/human.js"></script>
 
     <script>
+      var example = new Human();
+
       $('#go').click(function() {
         eval($('#input').val());
-      })
+      }.bind(example));
     </script>
 
   </body>

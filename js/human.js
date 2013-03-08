@@ -1,3 +1,7 @@
 function Human() {
-  console.log('New human created');
+  this.do = {
+    say: function(input) {
+      return this.name + ' doesn`t have anything to say...';
+    }
+  };
 }
