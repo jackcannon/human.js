@@ -6,7 +6,7 @@
   </head>
   <body>
     
-    <div id="display"></div>
+    <canvas id="display"></canvas>
     <div id="controls">
       <textarea id="input"></textarea>
       <input type="button" value="Go" id="go"></input>
@@ -18,11 +18,151 @@
     <script src="js/human.js"></script>
 
     <script>
-      var example = new Human();
+      var box = [];
 
-      $('#go').click(function() {
-        eval($('#input').val());
-      }.bind(example));
+      var Jack = new Human({
+        name: 'Jack',
+        gender: 'male',
+        x: -100,
+        y: 0
+      });
+      var Amanda = new Human({
+        name: 'Amanda',
+        gender: 'female',
+        orientation: 'left',
+        x: 100,
+        y: 0
+      });
+
+
+      function doProcessing(processing) {
+
+        processing.draw = function () {
+          processing.size($('#display').width(), $('#display').height());
+          processing.background(255);
+
+          var centreX = processing.width / 2;
+          var centreY = processing.height / 2;
+
+          function getPoint(baseX, baseY, long, angle) {
+            var x = baseX + Math.sin(angle * 2 * Math.PI) * long;
+            var y = baseY - Math.cos(angle * 2 * Math.PI) * long;
+
+            return {x: x, y: y}
+          }
+
+          function getPointFromObj(obj, list, base) {
+            if(obj.connects instanceof Array && obj.connects.length > 0) {
+              var base = getPointFromObj(list[obj.connects[0]], list, base);
+              return getPoint(base.x, base.y, obj.long, obj.angle);
+            } else {
+              return getPoint(base.x, base.y, obj.long, obj.angle);
+            }
+          }
+
+          function drawPoint(x, y, gender) { //dont apply centreX/centreY, do apply obj.x/obj.y beforehand
+            if(gender == 'male') {
+              processing.fill(200 , 200 , 255);
+              processing.stroke(200 , 200 , 255);
+              processing.strokeWeight(1);
+            } else if (gender == 'female') {
+              processing.fill(255 , 210 , 210);
+              processing.stroke(255 , 210 , 210);
+              processing.strokeWeight(1);
+            }
+
+            var pointX = centreX + x - 2;
+            var pointY = centreY + y - 2;
+
+            processing.ellipse(pointX, pointY, 4, 4);
+          }
+
+          function drawLine(x1, y1, x2, y2, gender) {
+            if (gender == 'male') {
+              processing.fill(150 , 150 , 255);
+              processing.stroke(150 , 150 , 255);
+            } else if (gender == 'female') {
+              processing.fill(255 , 175 , 175);
+              processing.stroke(255 , 175 , 175);
+            }
+            processing.strokeWeight(2);
+            processing.line(centreX + x1 - 2, centreY + y1 - 2, centreX + x2 - 2, centreY + y2 - 2);
+          }
+
+          for (var obj in box) {
+            for(var p in box[obj].points) {
+              var info = box[obj].points[p];
+              for(var co in info.connects) {
+                var base = box[obj].points[info.connects[co]];
+                var bp = getPointFromObj(base, box[obj].points, box[obj]);
+                var ip = getPointFromObj(info, box[obj].points, box[obj]);
+                drawLine(bp.x, bp.y, ip.x, ip.y, box[obj].gender);
+              }
+            }
+
+            for(var p in box[obj].points) {
+              var info = box[obj].points[p];
+              if (info.connects.length > 0) {
+                var base = getPointFromObj(box[obj].points[info.connects[0]], box[obj].points, box[obj]);
+              } else {
+                var base = {
+                  x: box[obj].x,
+                  y: box[obj].y
+                }
+              }
+              var ip = getPointFromObj(info, box[obj].points, box[obj]);
+              drawPoint( ip.x , ip.y , box[obj].gender);
+            }
+          }
+        }
+      }
+
+
+      var canvas = document.getElementById("display");
+      var processingInstance = new Processing(canvas, doProcessing);
+
+      var execute = function () {
+        return function() {
+          var stuff = eval($('#input').val());
+          // if(stuff) console.log(stuff);
+        }.bind(Jack)();
+      }
+
+      $('#go').click(execute);
+
+      $("#input, #display").hover(
+        function () {
+          $('#input').css({"border-top": "2px dashed #AAAAFF"});
+        },
+        function () {
+          $('#input').css({"border-top": "2px dashed #EEEEFF"});
+        }
+      );
+
+      $('#input').keydown(function (e) {
+        if (e.keyCode == 13 && e.shiftKey) {
+          execute();
+          e.preventDefault();
+        }
+        if (e.keyCode == 9) {
+          // $('#input').val($('#input').val() + '  ');
+          // console.log($('#input').caret().start);
+          e.preventDefault();
+        }
+      });
+
+
+
+      var putHumansInBox = function() {
+        for(var v in window) {
+          if(window[v] instanceof Human && ($.inArray(window[v], box) === -1)) {
+            box.push(window[v]);
+          }
+        }
+      }
+      putHumansInBox();
+      var boxLoop = setInterval(putHumansInBox, 500);
+
     </script>
 
   </body>

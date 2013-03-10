@@ -1,32 +1,76 @@
 html, body {
   padding: 0;
   margin: 0;
-  width: 100%;
+  width: 99%;
   height: 98%;
   font-family: monospace;
   font-size: 14px;
 }
 
+html {
+  /*background-color: #EEEEFF;*/
+
+  background: rgb(255,255,255); /* Old browsers */
+  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(238,238,255,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(238,238,255,1))); /* Chrome,Safari4+ */
+  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* Opera 12+ */
+  background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* IE10+ */
+  background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
 body {
   padding: 5px;
+  text-align: center;
 }
 
 #display {
-  width: 100%;
-  height: 50%;
-  border: 2px solid blue;
+  padding: 0;
+  margin: 0 auto;
+  width: 80%;
+  height: 80%;
+  vertical-align: middle;
 }
 
 #controls {
-  position: fixed;
-  bottom: 0;
+  padding: 0;
+  margin: 0 auto;
   width: 100%;
+  height: 20%;
 }
 
   textarea {
-    width: 90%;
-    height: 100px;
-    border: 2px solid red;
+    padding: 0;
+    margin: 0;
+    width: 80%;
+    height: 100%;
+    border: 0;
+    border-top: 2px dashed #EEEEFF;
     font-family: monospace;
     font-size: 14px;
   }
+
+    textarea:focus {
+      border: 0;
+      outline: none;
+    }
+
+  #go {
+    padding: 0;
+    margin: auto;
+    position: fixed;
+    top: 85%;
+    width: 50px;
+    height: 30px;
+    font-family: Tahoma, Geneva, sans-serif;
+    background-color: #FFFFFF;
+    border: 2px dashed #EEEEFF;
+    color: #CCCCFF;
+  }
+
+    #go:hover {
+      border: 2px dashed #AAAAFF;
+      color: #AAAAFF;
+    }
