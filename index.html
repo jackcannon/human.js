@@ -2,10 +2,10 @@
 <html>
   <head>
     <title>Human.js</title>
+    <link href='http://fonts.googleapis.com/css?family=Poiret+One|Ubuntu|Josefin+Slab|Julius+Sans+One' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/main.css">
   </head>
   <body>
-    
     <canvas id="display"></canvas>
     <div id="controls">
       <textarea id="input"></textarea>
@@ -37,12 +37,26 @@
 
       function doProcessing(processing) {
 
+        processing.setup = function() {
+          font = processing.createFont('Julius Sans One');
+          processing.textFont(font, 18);
+        }
+
         processing.draw = function () {
           processing.size($('#display').width(), $('#display').height());
           processing.background(255);
 
           var centreX = processing.width / 2;
           var centreY = processing.height / 2;
+
+          function crosshair() {
+            processing.fill(128 , 128 , 128);
+            processing.stroke(128 , 128 , 128);
+            processing.strokeWeight(1);
+            var shift = -2;
+            processing.line(centreX + shift, centreY - 10 + shift, centreX + shift, centreY + 10 + shift);
+            processing.line(centreX - 10 + shift, centreY + shift, centreX + 10 + shift, centreY + shift);
+          }
 
           function getPoint(baseX, baseY, long, angle) {
             var x = baseX + Math.sin(angle * 2 * Math.PI) * long;
@@ -89,6 +103,29 @@
             processing.line(centreX + x1 - 2, centreY + y1 - 2, centreX + x2 - 2, centreY + y2 - 2);
           }
 
+          function text(x,y,text,gender,type) { // type == 'header' || 'speech'
+            if(gender == 'male') {
+              processing.fill(150 , 150 , 255);
+              processing.stroke(150 , 150 , 255);
+            } else {
+              processing.fill(255 , 175 , 175);
+              processing.stroke(255 , 175 , 175);
+            }
+            if(type == 'header') {
+              font = processing.createFont('Ubuntu');
+              processing.textFont(font, 14);
+            } else if (type == 'speech') {
+              font = processing.createFont('Ubuntu');
+              processing.textFont(font, 11);
+            }
+
+            processing.textAlign('CENTER', 'CENTER');
+            var textWidth = processing.textWidth(text);
+            processing.text( text , centreX + x - (textWidth / 2) - 2 , centreY + y - 2 );
+          }
+
+          // crosshair();
+
           for (var obj in box) {
             for(var p in box[obj].points) {
               var info = box[obj].points[p];
@@ -113,6 +150,11 @@
               var ip = getPointFromObj(info, box[obj].points, box[obj]);
               drawPoint( ip.x , ip.y , box[obj].gender);
             }
+
+            //do text
+            var crown = getPointFromObj(box[obj].points.crown, box[obj].points, box[obj]);
+            text(crown.x, crown.y - 30, box[obj].name, box[obj].gender, 'header');
+            text(crown.x, crown.y - 15, box[obj].saying, box[obj].gender, 'speech');
           }
         }
       }
@@ -156,6 +198,7 @@
       var putHumansInBox = function() {
         for(var v in window) {
           if(window[v] instanceof Human && ($.inArray(window[v], box) === -1)) {
+            window[v].universe = box;
             box.push(window[v]);
           }
         }

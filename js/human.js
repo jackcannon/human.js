@@ -5,8 +5,11 @@ function Human(p) {
   this.y           = (p && p.y           && typeof p.y           === 'number')? p.y                         : 0;
   this.gender      = (p && p.gender      && typeof p.gender      === 'string')? p.gender.toLowerCase()      : 'male';
   this.orientation = (p && p.orientation && typeof p.orientation === 'string')? p.orientation.toLowerCase() : 'right';
+  this.universe    = (p && p.universe    && typeof p.universe    === 'object')? p.universe                  : null;
 
   this.name        = (p && p.name        && typeof p.name        === 'string')? p.name                      : HumanJsUtils.name(this.gender);
+
+  this.saying = ''
 
   this.points = {
     pelvis: {
@@ -137,22 +140,6 @@ function Human(p) {
 
   this.defaults = HumanJsUtils.clone(this.points);
 
-  this.perform_old = function (tasks) { // tasks should be an array of things to do.
-    var self = this;
-    async.map(tasks, function(item, cb) {
-      cb(null, function (callback) {
-        setTimeout(function () {
-          item.func.bind(this)();
-          callback(null);
-        }.bind(this), item.timer);
-      }.bind(self));
-    }, function(err, results) {
-
-      async.series(results, function (err, results) {});
-
-    });
-  }
-
   this.perform = function (tasks) { // tasks should be an array of things to do.
     var self = this;
     async.map(tasks, function(item, cb) {
@@ -160,7 +147,7 @@ function Human(p) {
         setTimeout(function () {
           item.func.bind(this)(callback);
           // callback(null);
-        }.bind(this), item.timer);
+        }.bind(this), (typeof item.timer !== 'undefined') ? item.timer : 0);
       }.bind(self));
     }, function(err, results) {
 
@@ -176,7 +163,7 @@ function Human(p) {
     if(typeof time === 'undefined') var time = 500;
     if(typeof cb === 'undefined') var cb = function() {};
 
-    if(typeof newValue === 'string') {
+    if(typeof newValue === 'object') {
       if(!newValue.long) {
         newValue.long = self.points[point].long;
       }
@@ -235,6 +222,91 @@ function Human(p) {
     this.points = HumanJsUtils.clone(this.defaults);
   }
 
+  this.say = function (text) {
+    var self = this;
+    var sentences = text.replace(/\.\s{0,}/g, '.{BREAK}').replace(/\!\s{0,}/g, '!{BREAK}').replace(/\?\s{0,}/g, '?{BREAK}').split('{BREAK}');
+    var arr = [];
+    async.map(sentences, function(item, callback) {
+      var number = HumanJsUtils.inArray(item, sentences);
+      callback(null, {
+        func: function (cb) {
+          this.saying = item.toString();
+          cb();
+        },
+        timer: (number > 0) ? sentences[number - 1].split(' ').length * 500 : 0
+      });
+    }, function (err, results) {
+      results.push({
+        func: function (cb) {
+          this.saying = '';
+          cb();
+        },
+        timer: sentences[sentences.length - 1].split(' ').length * 500
+      });
+      self.perform(results);
+    });
+  }
+
+  this.face = function(direction) {
+    if(direction !== 'front' && direction !== 'left' && direction !== 'right') return;
+
+    if(direction == 'front') {
+      var newp = {
+        leftShoulder: {
+          long: 10
+        },
+        rightShoulder: {
+          long: 10
+        },
+        leftToe: 0.75,
+        rightToe: 0.25,
+        leftKnee: 0.55,
+        rightKnee: 0.45,
+        leftAnkle: 0.5,
+        rightAnkle: 0.5
+      }
+    } else {
+      var newp = {
+        leftShoulder: {
+          long: 5
+        },
+        rightShoulder: {
+          long: 5
+        },
+        leftToe: 0.25,
+        rightToe: 0.25,
+        leftKnee: 0.52,
+        rightKnee: 0.48,
+        leftAnkle: 0.52,
+        rightAnkle: 0.52
+      }
+
+      if(direction == 'left') {
+        var newp = HumanJsUtils.flipHor(newp);
+        var old = newp;
+        var newp = HumanJsUtils.flipTraits(newp);
+      }
+    }
+
+    this.perform([
+      {
+        func: function(cb) {
+          HumanJsUtils.multiTween([
+            {point: 'leftShoulder', value: newp.leftShoulder, timer: 300},
+            {point: 'rightShoulder', value: newp.rightShoulder, timer: 300},
+            {point: 'leftKnee', value: newp.leftKnee, timer: 300},
+            {point: 'rightKnee', value: newp.rightKnee, timer: 300},
+            {point: 'leftAnkle', value: newp.leftAnkle, timer: 300},
+            {point: 'rightAnkle', value: newp.rightAnkle, timer: 300},
+            {point: 'leftToe', value: newp.leftToe, timer: 0},
+            {point: 'rightToe', value: newp.rightToe, timer: 0}
+          ], self, cb);
+        },
+        timer: 0
+      }
+    ]);
+  }
+
   this.tapFoot = function(foot) {
     var timer = setInterval(function () {
       var current = this.points[this.orientation + 'Toe'].angle;
@@ -248,56 +320,7 @@ function Human(p) {
   this.moveHand = function () {
     this.points.rightWrist.angle = 0.01;
   }
-  this.wave_old = function () {
-    var useElbow = this.orientation + "Elbow";
-    var useWrist = this.orientation + "Wrist";
-    var returnElbow = this.points[useElbow].angle;
-    var returnWrist = this.points[useWrist].angle;
-    var newp = {
-      elbow: 0.4,
-      wrist1: 0.95,
-      wrist2: 0.1
-    }
-
-    if(this.orientation == 'left') {
-      var newp = HumanJsUtils.flipHor(newp);
-    }
-
-    this.perform_old([
-      {
-        func: function() {
-          this.points[useWrist].angle = newp.wrist1;
-          this.points[useElbow].angle = newp.elbow;
-        },
-        timer: 200
-      },
-      {
-        func: function() {
-          this.points[useWrist].angle = newp.wrist2;
-        },
-        timer: 200
-      },
-      {
-        func: function() {
-          this.points[useWrist].angle = newp.wrist1;
-        },
-        timer: 200
-      },
-      {
-        func: function() {
-          this.points[useWrist].angle = newp.wrist2;
-        },
-        timer: 200
-      },
-      {
-        func: function() {
-          this.points[useWrist].angle = returnWrist;
-          this.points[useElbow].angle = returnElbow;
-        },
-        timer: 200
-      }
-    ]);
-  }
+  
   this.wave = function () {
     var self = this;
     var use = {
@@ -364,6 +387,19 @@ function Human(p) {
     ]);
   }
 
+  this.nameFriends = function () {
+    if(!this.universe) return;
+
+    var str = '';
+
+    for(var f in this.universe) {
+      if(this.universe[f] instanceof Human) {
+        str = str + this.universe[f].name + '. '
+      }
+    }
+    this.say(str);
+  }
+
 }
 
 var HumanJsUtils = {
@@ -373,9 +409,37 @@ var HumanJsUtils = {
   flipHor: function (obj) {
     var reply = {};
     for(var p in obj) {
-      reply[p] = 1 - obj[p];
+      if (typeof obj[p] == 'number') {
+        reply[p] = 1 - obj[p];
+      } else {
+        reply[p] = HumanJsUtils.clone(obj[p]);
+        if (reply[p] && reply[p].angle) reply[p].angle = 1 - reply[p].angle;
+      }
     }
     return reply;
+  },
+  flipTraits: function (obj) { //flips left and right traits
+    var obj = HumanJsUtils.clone(obj);
+    var left = [];
+    var right = [];
+    for(var i in obj) {
+      if(/^right/i.test(i)) {
+        left.push({prop: i.replace('right',''), val: obj[i]});
+        delete obj[i];
+      } else if (/^left/i.test(i)) {
+        right.push({prop: i.replace('left',''), val: obj[i]});
+        delete obj[i]
+      }
+    }
+
+    for(var i in left) {
+      obj['left' + left[i].prop] = left[i].val;
+    }
+    for(var i in right) {
+      obj['right' + right[i].prop] = right[i].val;
+    }
+
+    return obj;
   },
   name: function(gender) {
     var names = {
@@ -393,5 +457,13 @@ var HumanJsUtils = {
     }, function (err, results) {
       async.parallel(results, clbck);
     })
+  },
+  inArray: function (item, arr) {
+    for(var i in arr) {
+      if(arr[i] === item) {
+        return (parseInt(i) !== 'NaN')? parseInt(i) : -1 ;
+      }
+    }
+    return -1;
   }
 }
