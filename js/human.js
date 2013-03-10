@@ -140,6 +140,39 @@ function Human(p) {
 
   this.defaults = HumanJsUtils.clone(this.points);
 
+
+
+  this.events = {};
+  this.eventListeners = {};
+
+  this.fireEvent = function (event, value) {
+    if (typeof this.universe === 'undefined') return;
+    for(var i in this.universe) {
+      if (this.universe[i] && this.universe[i] instanceof Human && this.universe[i].eventListeners && this.universe[i].eventListeners[event] && typeof this.universe[i].eventListeners[event] === 'function') {
+        this.universe[i].eventListeners[event].bind(this.universe[i])({
+          target: this,
+          value: value
+        });
+      }
+    }
+  }
+
+  this.addListener = function (event, func) {
+    this.eventListeners[event] = func;
+  }
+
+  this.addListener('wave', function (event) {
+    if(event.target !== this) this.say('Hello ' + event.target.name);
+  });
+
+  this.addListener('say', function (event) {
+    var self = this;
+    if(event.target !== this) setTimeout(function () { self.say(HumanJsUtils.name('male')) }, 1000);
+  });
+
+
+
+
   this.perform = function (tasks) { // tasks should be an array of things to do.
     var self = this;
     async.map(tasks, function(item, cb) {
@@ -224,13 +257,14 @@ function Human(p) {
 
   this.say = function (text) {
     var self = this;
-    var sentences = text.replace(/\.\s{0,}/g, '.{BREAK}').replace(/\!\s{0,}/g, '!{BREAK}').replace(/\?\s{0,}/g, '?{BREAK}').split('{BREAK}');
+    var sentences = text.replace(/\.{1,}\s{0,}/g, '.{BREAK}').replace(/\!{1,}\s{0,}/g, '!{BREAK}').replace(/\?{1,}\s{0,}/g, '?{BREAK}').split('{BREAK}');
     var arr = [];
     async.map(sentences, function(item, callback) {
       var number = HumanJsUtils.inArray(item, sentences);
       callback(null, {
         func: function (cb) {
           this.saying = item.toString();
+          this.fireEvent('say', item.toString());
           cb();
         },
         timer: (number > 0) ? sentences[number - 1].split(' ').length * 500 : 0
@@ -381,23 +415,11 @@ function Human(p) {
             {point: use.wrist, value: oldp.wrist, timer: 300},
             {point: use.elbow, value: oldp.elbow, timer: 300}
           ], self, cb);
+          this.fireEvent('wave');
         },
         timer: 0
       }
     ]);
-  }
-
-  this.nameFriends = function () {
-    if(!this.universe) return;
-
-    var str = '';
-
-    for(var f in this.universe) {
-      if(this.universe[f] instanceof Human) {
-        str = str + this.universe[f].name + '. '
-      }
-    }
-    this.say(str);
   }
 
 }
