@@ -11,6 +11,10 @@ function Human(p) {
 
   this.saying = ''
 
+  this.behaviour = {
+    ignore: false
+  }
+
   this.points = {
     pelvis: {
       long: 0,
@@ -146,13 +150,22 @@ function Human(p) {
   this.eventListeners = {};
 
   this.fireEvent = function (event, value) {
-    if (typeof this.universe === 'undefined') return;
-    for(var i in this.universe) {
-      if (this.universe[i] && this.universe[i] instanceof Human && this.universe[i].eventListeners && this.universe[i].eventListeners[event] && typeof this.universe[i].eventListeners[event] === 'function') {
-        this.universe[i].eventListeners[event].bind(this.universe[i])({
-          target: this,
-          value: value
-        });
+    var self = this;
+    var oldIgnore = self.behaviour.ignore;
+    self.behaviour.ignore = true;
+    setTimeout(function () {
+      self.behaviour.ignore = oldIgnore;
+    }, 3000);
+
+    var eObj = {
+      target: self,
+      value: value
+    }
+
+    if (typeof self.universe === 'undefined') return;
+    for(var i in self.universe) {
+      if (self.universe[i] && self.universe[i] instanceof Human && self.universe[i] !== self && self.universe[i].eventListeners && self.universe[i].eventListeners[event] && typeof self.universe[i].eventListeners[event] === 'function') {
+        self.universe[i].eventListeners[event].bind(self.universe[i])(eObj);
       }
     }
   }
@@ -161,17 +174,14 @@ function Human(p) {
     this.eventListeners[event] = func;
   }
 
-  this.addListener('wave', function (event) {
-    if(event.target !== this) this.say('Hello ' + event.target.name);
-  });
+  // this.addListener('wave', function (event) {
+  //   if(this.behaviour.ignore !== true) this.say('Hello ' + event.target.name);
+  // });
 
-  this.addListener('say', function (event) {
-    var self = this;
-    if(event.target !== this) setTimeout(function () { self.say(HumanJsUtils.name('male')) }, 1000);
-  });
-
-
-
+  // this.addListener('say', function (event) {
+  //   var self = this;
+  //   if(this.behaviour.ignore !== true) setTimeout(function () { self.say('You say something, ' + event.target.name + '?') }, 500);
+  // });
 
   this.perform = function (tasks) { // tasks should be an array of things to do.
     var self = this;
@@ -255,8 +265,9 @@ function Human(p) {
     this.points = HumanJsUtils.clone(this.defaults);
   }
 
-  this.say = function (text) {
+  this.say = function () {
     var self = this;
+    var text = Array.prototype.slice.call(arguments, 0).join('. ');
     var sentences = text.replace(/\.{1,}\s{0,}/g, '.{BREAK}').replace(/\!{1,}\s{0,}/g, '!{BREAK}').replace(/\?{1,}\s{0,}/g, '?{BREAK}').split('{BREAK}');
     var arr = [];
     async.map(sentences, function(item, callback) {
@@ -487,5 +498,12 @@ var HumanJsUtils = {
       }
     }
     return -1;
+  },
+  test: function test() {
+    console.log(arguments);
+    return arguments;
+  },
+  test2: function test2(p1, p2, p3) {
+    return HumanJsUtils.test(p1, p2, p3);
   }
 }
