@@ -35,7 +35,6 @@
         y: 0
       });
 
-
       function doProcessing(processing) {
 
         processing.setup = function() {
@@ -47,8 +46,35 @@
           processing.size($('#display').width(), $('#display').height());
           processing.background(255);
 
-          var centreX = processing.width / 2;
-          var centreY = processing.height / 2;
+          var centreX = processing.width / 2 - 20;
+          var centreY = processing.height / 2 + 75;
+
+          function grid(spacing, color) { //color is grayscale between 0 and 255 only
+            if(!spacing) var spacing = 50;
+            if(!color) {
+              processing.fill(200 , 200 , 200);
+              processing.stroke(200 , 200 , 200);
+            } else {
+              processing.fill(color , color , color);
+              processing.stroke(color , color , color);
+            }
+            processing.strokeWeight(1);
+            var pW = processing.width;
+            var pH = processing.height;
+            for(var hor = 1; hor < Math.ceil(pW / spacing); hor++) {
+              processing.line((hor * spacing), 0, (hor * spacing), pH);
+            }
+            for(var ver = 1; ver < Math.ceil(pH / spacing); ver++) {
+              processing.line(0, (ver * spacing), pW, (ver * spacing));
+            }
+          }
+
+          function drawFloor() {
+            processing.fill(230 , 230 , 230);
+            processing.stroke(230 , 230 , 230);
+            processing.strokeWeight(3);
+            processing.line(0, centreY, processing.width, centreY);
+          }
 
           function crosshair() {
             processing.fill(128 , 128 , 128);
@@ -125,7 +151,9 @@
             processing.text( text , centreX + x - (textWidth / 2) - 2 , centreY + y - 2 );
           }
 
+          // grid(50, 240);
           // crosshair();
+          drawFloor();
 
           for (var obj in box) {
             for(var p in box[obj].points) {
@@ -193,7 +221,6 @@
           e.preventDefault();
         }
       });
-
 
 
       var putHumansInBox = function() {

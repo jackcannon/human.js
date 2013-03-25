@@ -9,17 +9,20 @@ function Human(p) {
 
   this.name        = (p && p.name        && typeof p.name        === 'string')? p.name                      : HumanJsUtils.name(this.gender);
 
-  this.saying = ''
+  this.saying = '';
 
   this.behaviour = {
-    ignore: false
+    ignore: false,
+    base: 'rightAnkle'
   }
 
   this.points = {
     pelvis: {
-      long: 0,
-      angle: 0,
-      connects: []
+      long: 30,
+      angle: 0.95,
+      connects: [
+        'rightKnee'
+      ]
     },
     neck: {
       long: 50,
@@ -77,17 +80,15 @@ function Human(p) {
     },
     rightKnee: {
       long: 30,
-      angle: 0.45,
+      angle: 0,
       connects: [
-        'pelvis'
+        'rightAnkle'
       ]
     },
     rightAnkle: {
-      long: 30,
-      angle: 0.50,
-      connects: [
-        'rightKnee'
-      ]
+      long: 0,
+      angle: 0.0,
+      connects: []
     },
     rightToe: {
       long: 5,
@@ -144,22 +145,30 @@ function Human(p) {
 
   this.defaults = HumanJsUtils.clone(this.points);
 
-
-
   this.events = {};
   this.eventListeners = {};
 
-  this.fireEvent = function (event, value) {
+  this.doing = [];
+
+
+
+  this.fireEvent = function (event, value, sf) { //sf == start/finish
     var self = this;
-    var oldIgnore = self.behaviour.ignore;
-    self.behaviour.ignore = true;
-    setTimeout(function () {
-      self.behaviour.ignore = oldIgnore;
-    }, 3000);
+
+    if(self.behaviour.ignore !== true) { //temp setting ignore events to true if not already!
+      var oldIgnore = self.behaviour.ignore;
+      self.behaviour.ignore = true;
+
+      setTimeout(function () {
+        self.behaviour.ignore = oldIgnore;
+      }, 300);
+    }
 
     var eObj = {
       target: self,
-      value: value
+      action: event,
+      value: value,
+      at: sf
     }
 
     if (typeof self.universe === 'undefined') return;
@@ -174,14 +183,54 @@ function Human(p) {
     this.eventListeners[event] = func;
   }
 
+  this.removeListener = function (event) {
+    if(this.eventListeners && this.eventListeners[event]) delete this.eventListeners[event];
+  }
+
   // this.addListener('wave', function (event) {
   //   if(this.behaviour.ignore !== true) this.say('Hello ' + event.target.name);
   // });
 
-  // this.addListener('say', function (event) {
-  //   var self = this;
-  //   if(this.behaviour.ignore !== true) setTimeout(function () { self.say('You say something, ' + event.target.name + '?') }, 500);
-  // });
+  this.addListener('say', function (event) {
+    var self = this;
+    // if(this.behaviour.ignore !== true) setTimeout(function () { self.say('You say something, ' + event.target.name + '?') }, 500);
+    var val = event.value;
+    console.log(this.name, event.at, event.action, val);
+    console.log(event.at == 'start', '&&', HumanJsUtils.contains(val, 'lets'), '&&', HumanJsUtils.contains(val, 'dance'));
+    if(event.at == 'start' && HumanJsUtils.contains(val, 'lets') && HumanJsUtils.contains(val, 'dance')) {
+      
+      this.addListener('dance', function (e) {
+        if(e.at == 'start') {
+          this.dance();
+          this.removeListener('dance');
+        }
+      });
+      
+    }
+  });
+
+
+
+  this.startDoing = function (act, value) {
+    if( !( this.isDoing(act) ) ) {
+      this.doing.push(act);
+    }
+    this.fireEvent(act, value, 'start');
+  }
+
+  this.finishDoing = function (act, value) { // pass in value as null to fire event
+    var index = HumanJsUtils.inArray(act, this.doing);
+    if( this.isDoing(act) ) {
+      this.doing.splice(index, 1);
+    }
+    this.fireEvent(act, value, 'finish');
+  }
+
+  this.isDoing = function (act) {
+    return !!( HumanJsUtils.inArray(act, this.doing) !== -1 );
+  }
+
+
 
   this.perform = function (tasks) { // tasks should be an array of things to do.
     var self = this;
@@ -207,13 +256,13 @@ function Human(p) {
     if(typeof cb === 'undefined') var cb = function() {};
 
     if(typeof newValue === 'object') {
-      if(!newValue.long) {
+      if(typeof newValue.long === 'undefined') {
         newValue.long = self.points[point].long;
       }
-      if(!newValue.angle) {
+      if(typeof newValue.angle === 'undefined') {
         newValue.angle = self.points[point].angle;
       }
-      if(!newValue.connects) {
+      if(typeof newValue.connects === 'undefined') {
         newValue.connects = self.points[point].connects;
       }
     } else if(typeof newValue === 'number') {
@@ -275,15 +324,16 @@ function Human(p) {
       callback(null, {
         func: function (cb) {
           this.saying = item.toString();
-          this.fireEvent('say', item.toString());
+          this.startDoing('say', item.toString());
           cb();
         },
         timer: (number > 0) ? sentences[number - 1].split(' ').length * 500 : 0
       });
     }, function (err, results) {
-      results.push({
+      results.push({ // last action. Clean up here
         func: function (cb) {
           this.saying = '';
+          this.finishDoing('say');
           cb();
         },
         timer: sentences[sentences.length - 1].split(' ').length * 500
@@ -335,6 +385,7 @@ function Human(p) {
 
     this.perform([
       {
+        timer: 0,
         func: function(cb) {
           HumanJsUtils.multiTween([
             {point: 'leftShoulder', value: newp.leftShoulder, timer: 300},
@@ -346,28 +397,15 @@ function Human(p) {
             {point: 'leftToe', value: newp.leftToe, timer: 0},
             {point: 'rightToe', value: newp.rightToe, timer: 0}
           ], self, cb);
-        },
-        timer: 0
+        }
       }
     ]);
   }
 
-  this.tapFoot = function(foot) {
-    var timer = setInterval(function () {
-      var current = this.points[this.orientation + 'Toe'].angle;
-      if(current == 0.2) {
-        this.points[this.orientation + 'Toe'].angle = 0.25;
-      } else {
-        this.points[this.orientation + 'Toe'].angle = 0.2;
-      }
-    }.bind(this), 500);
-  }
-  this.moveHand = function () {
-    this.points.rightWrist.angle = 0.01;
-  }
-  
   this.wave = function () {
     var self = this;
+    if(this.isDoing('wave')) return;
+    this.startDoing('wave');
     var use = {
       elbow: this.orientation + "Elbow",
       wrist: this.orientation + "Wrist"
@@ -388,47 +426,235 @@ function Human(p) {
 
     this.perform([
       {
+        timer: 0,
         func: function(cb) {
           HumanJsUtils.multiTween([
             {point: use.wrist, value: newp.wrist2, timer: 300},
             {point: use.elbow, value: newp.elbow, timer: 300}
           ], self, cb);
-        },
-        timer: 0
+        }
       },
       {
+        timer: 0,
         func: function(cb) {
           self.tween(use.wrist, newp.wrist1, 200, cb);
-        },
-        timer: 0
+        }
       },
       {
+        timer: 0,
         func: function(cb) {
           self.tween(use.wrist, newp.wrist2, 200, cb);
-        },
-        timer: 0
+        }
       },
       {
+        timer: 0,
         func: function(cb) {
           self.tween(use.wrist, newp.wrist1, 200, cb);
-        },
-        timer: 0
+        }
       },
       {
+        timer: 0,
         func: function(cb) {
           self.tween(use.wrist, newp.wrist2, 200, cb);
-        },
-        timer: 0
+        }
       },
       {
+        timer: 0,
         func: function(cb) {
           HumanJsUtils.multiTween([
             {point: use.wrist, value: oldp.wrist, timer: 300},
             {point: use.elbow, value: oldp.elbow, timer: 300}
+          ], self, function () {
+            self.finishDoing('wave');
+            cb();
+          });
+        }
+      }
+    ]);
+  }
+
+  this.dance = function (type) {
+    var dances = ['robot'];
+    if(!type) return this[dances[Math.floor(Math.random() * dances.length)]]();
+    if(HumanJsUtils.inArray(type, dances) !== -1) {
+      return this[type]();
+    }
+  }
+
+  this.robot = function () {
+    var self = this;
+    var oldp = HumanJsUtils.clone(this.points);
+    var oldl = {x: this.x, y: this.y};
+
+    if(this.isDoing('robot') || this.isDoing('dance')) return;
+    this.startDoing('robot');
+    this.startDoing('dance');
+
+    this.perform([
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'rightElbow', value: 0.4, timer: 500},
+            {point: 'leftElbow', value: 0.6, timer: 500},
+            {point: 'rightWrist', value: 0.6, timer: 500},
+            {point: 'leftWrist', value: 0.2, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'neck', value: 0.01, timer: 500},
+            {point: 'rightElbow', value: 0.4, timer: 500},
+            {point: 'leftElbow', value: 0.65, timer: 500},
+            {point: 'rightWrist', value: 0.95, timer: 500},
+            {point: 'leftWrist', value: 0.5, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'neck', value: 0.99, timer: 500},
+            {point: 'rightElbow', value: 0.45, timer: 500},
+            {point: 'leftElbow', value: 0.75, timer: 500},
+            {point: 'rightWrist', value: 0.25, timer: 500},
+            {point: 'leftWrist', value: 0.33, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'neck', value: 0.01, timer: 500},
+            {point: 'rightElbow', value: 0.5, timer: 500},
+            {point: 'leftElbow', value: 0.55, timer: 500},
+            {point: 'rightWrist', value: 0.125, timer: 500},
+            {point: 'leftWrist', value: 0.5, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'neck', value: 0.99, timer: 500},
+            {point: 'rightElbow', value: 0.5, timer: 500},
+            {point: 'leftElbow', value: 0.5, timer: 500},
+            {point: 'rightWrist', value: 0.97, timer: 500},
+            {point: 'leftWrist', value: 0.03, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightShoulder', value: 0.2, timer: 250},
+            {point: 'leftShoulder', value: 0.8, timer: 250},
+            {point: 'neck', value: 0.01, timer: 500},
+            {point: 'rightElbow', value: 0.4, timer: 500},
+            {point: 'leftElbow', value: 0.51, timer: 500},
+            {point: 'rightWrist', value: 0.75, timer: 500},
+            {point: 'leftWrist', value: 0, timer: 500}
+          ], self, function () {
+            HumanJsUtils.multiTween([
+              {point: 'rightShoulder', value: 0.25, timer: 100},
+              {point: 'leftShoulder', value: 0.75, timer: 100}
+            ], self, cb);
+          });
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween(oldp, self, function () {
+            self.finishDoing('robot');
+            self.finishDoing('dance');
+            cb();
+          });
+        }
+      }
+    ]);
+  }
+
+  this.test = function () {
+    var self = this;
+    var oldp = HumanJsUtils.clone(this.points);
+    var oldl = {x: this.x, y: this.y};
+
+    this.perform([
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightElbow', value: 0.45, timer: 500},
+            {point: 'rightWrist', value: 0.15, timer: 500},
           ], self, cb);
-          this.fireEvent('wave');
-        },
-        timer: 0
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightElbow', value: 0.15, timer: 500},
+            {point: 'rightWrist', value: 0.45, timer: 500}
+          ], self, cb);
+        }
+      },
+      {
+        timer: 100,
+        func: function (cb) {
+          HumanJsUtils.multiTween([
+            {point: 'rightElbow', value: 0.25, timer: 500},
+            {point: 'rightWrist', value: 0.27, timer: 500}
+          ], self, cb);
+        }
+      },
+      {
+        timer: 1500,
+        func: function (cb) {
+          HumanJsUtils.multiTween(oldp, self, cb);
+        }
       }
     ]);
   }
@@ -483,6 +709,15 @@ var HumanJsUtils = {
     return names[gender][random];
   },
   multiTween: function (arr, human, clbck) { // arr is array of object: point, value, timer
+
+    if(!(arr instanceof Array)) {
+      var newArr = [];
+      for(var i in arr) {
+        newArr.push({point: i, value: arr[i], timer: 300});
+      }
+      arr = newArr;
+    }
+
     async.map(arr, function (item, callback) {
       callback(null, function (cb) {
         human.tween(item.point, item.value, item.timer, cb)
@@ -491,7 +726,7 @@ var HumanJsUtils = {
       async.parallel(results, clbck);
     })
   },
-  inArray: function (item, arr) {
+  inArray: function (item, arr) { // TODO: use indexOf ????
     for(var i in arr) {
       if(arr[i] === item) {
         return (parseInt(i) !== 'NaN')? parseInt(i) : -1 ;
@@ -499,11 +734,18 @@ var HumanJsUtils = {
     }
     return -1;
   },
-  test: function test() {
-    console.log(arguments);
-    return arguments;
+  contains: function (ins, key, ignoreCase) { // for strings
+    if(!ins || !key) return false;
+    if(typeof ignoreCase === 'undefined') var ignoreCase = true;
+    if(ignoreCase) {
+      ins = ins.toLowerCase();
+      key = key.toLowerCase();
+    }
+    ins = HumanJsUtils.removePunc(ins);
+    key = HumanJsUtils.removePunc(key);
+    return !!(ins.indexOf(key) !== -1);
   },
-  test2: function test2(p1, p2, p3) {
-    return HumanJsUtils.test(p1, p2, p3);
+  removePunc: function (str) {
+    return str.replace(/[^a-zA-Z0-9\s]/gi, '');
   }
 }
