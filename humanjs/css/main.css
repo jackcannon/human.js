@@ -8,17 +8,8 @@ html, body {
 }
 
 html {
-  /*background-color: #EEEEFF;*/
-
-  background: rgb(255,255,255); /* Old browsers */
-  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%, rgba(238,238,255,1) 100%); /* FF3.6+ */
-  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(238,238,255,1))); /* Chrome,Safari4+ */
-  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* Opera 12+ */
-  background: -ms-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* IE10+ */
-  background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 0%,rgba(238,238,255,1) 100%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-
+  background-image:url('../img/bg.png');
+  background-repeat:repeat;
 }
 
 body {
@@ -32,7 +23,12 @@ body {
   width: 80%;
   height: 80%;
   vertical-align: middle;
+  outline: none;
 }
+
+  #display:focus {
+    outline: none;
+  }
 
 #controls {
   padding: 0;
