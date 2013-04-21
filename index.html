@@ -21,14 +21,14 @@
     <script>
       var box = [];
 
-      var Mr = new Human({
-        name: 'Mr Human',
+      var John = new Human({
+        name: 'John',
         gender: 'male',
         x: -100,
         y: 0
       });
-      var Mrs = new Human({
-        name: 'Mrs Human',
+      var Jane = new Human({
+        name: 'Jane',
         gender: 'female',
         orientation: 'left',
         x: 100,
@@ -168,10 +168,10 @@
       var processingInstance = new Processing(canvas, doProcessing);
 
       var execute = function () {
-        return function() {
+        return (box.length > 0) ? function() {
           var stuff = eval($('#input').val());
           // if(stuff) console.log(stuff);
-        }.bind(Jack)();
+        }.bind(box[0])() : null;
       }
 
       $('#go').click(execute);
