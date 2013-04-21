@@ -4,14 +4,16 @@ var http    = require('http');
 
 var app = express.createServer(express.logger());
 
-app.use(express.static(__dirname + '/humanjs'));
+var path = __dirname + '/node_modules/human';
+
+app.use(express.static(path));
 
 app.configure(function(){
-  app.use(express.static(__dirname + '/humanjs'));
+  app.use(express.static(path));
 });
 
 app.get('/*', function(req, res) {
-    app.use(express.static(__dirname + '/humanjs'));
+    app.use(express.static(path));
     // var path = req.url;
     // res.send(fs.readFileSync(__dirname + '/' + 'humanjs/index.html', 'utf8'));
 });
