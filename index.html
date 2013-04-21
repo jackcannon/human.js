@@ -21,14 +21,14 @@
     <script>
       var box = [];
 
-      var Jack = new Human({
-        name: 'Jack',
+      var Mr = new Human({
+        name: 'Mr Human',
         gender: 'male',
         x: -100,
         y: 0
       });
-      var Amanda = new Human({
-        name: 'Amanda',
+      var Mrs = new Human({
+        name: 'Mrs Human',
         gender: 'female',
         orientation: 'left',
         x: 100,
@@ -40,6 +40,7 @@
         processing.setup = function() {
           font = processing.createFont('Julius Sans One');
           processing.textFont(font, 18);
+          processing.frameRate(12);
         }
 
         processing.draw = function () {
@@ -83,22 +84,6 @@
             var shift = -2;
             processing.line(centreX + shift, centreY - 10 + shift, centreX + shift, centreY + 10 + shift);
             processing.line(centreX - 10 + shift, centreY + shift, centreX + 10 + shift, centreY + shift);
-          }
-
-          function getPoint(baseX, baseY, long, angle) {
-            var x = baseX + Math.sin(angle * 2 * Math.PI) * long;
-            var y = baseY - Math.cos(angle * 2 * Math.PI) * long;
-
-            return {x: x, y: y}
-          }
-
-          function getPointFromObj(obj, list, base) {
-            if(obj.connects instanceof Array && obj.connects.length > 0) {
-              var base = getPointFromObj(list[obj.connects[0]], list, base);
-              return getPoint(base.x, base.y, obj.long, obj.angle);
-            } else {
-              return getPoint(base.x, base.y, obj.long, obj.angle);
-            }
           }
 
           function drawPoint(x, y, gender) { //dont apply centreX/centreY, do apply obj.x/obj.y beforehand
@@ -157,31 +142,21 @@
 
           for (var obj in box) {
             for(var p in box[obj].points) {
-              var info = box[obj].points[p];
-              for(var co in info.connects) {
-                var base = box[obj].points[info.connects[co]];
-                var bp = getPointFromObj(base, box[obj].points, box[obj]);
-                var ip = getPointFromObj(info, box[obj].points, box[obj]);
+              var point = box[obj].points[p];
+              var bp = box[obj].getCoor(p);
+              for(var co in point.connects) {
+                var ip = box[obj].getCoor(point.connects[co]);
                 drawLine(bp.x, bp.y, ip.x, ip.y, box[obj].gender);
               }
             }
 
             for(var p in box[obj].points) {
-              var info = box[obj].points[p];
-              if (info.connects.length > 0) {
-                var base = getPointFromObj(box[obj].points[info.connects[0]], box[obj].points, box[obj]);
-              } else {
-                var base = {
-                  x: box[obj].x,
-                  y: box[obj].y
-                }
-              }
-              var ip = getPointFromObj(info, box[obj].points, box[obj]);
+              var ip = box[obj].getCoor(p);
               drawPoint( ip.x , ip.y , box[obj].gender);
             }
 
             //do text
-            var crown = getPointFromObj(box[obj].points.crown, box[obj].points, box[obj]);
+            var crown = box[obj].getCoor('crown');
             text(crown.x, crown.y - 30, box[obj].name, box[obj].gender, 'header');
             text(crown.x, crown.y - 15, box[obj].saying, box[obj].gender, 'speech');
           }
