@@ -3,7 +3,10 @@ Human.js Library
 
 ##Install
 
+caolan's async.js is required.
+
 ###In Browser
+	<script type="text/javascript" src="https://raw.github.com/caolan/async/master/lib/async.js"></script>
 	<script type="text/javascript" src="https://raw.github.com/jackcannon/human.js/master/js/human.js"></script>
 
 ###In Node.js
