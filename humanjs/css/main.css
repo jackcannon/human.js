@@ -46,6 +46,7 @@ body {
     border-top: 2px dashed #EEEEFF;
     font-family: monospace;
     font-size: 14px;
+    background-color: rgba(225,225,255,0.5);
   }
 
     textarea:focus {
@@ -62,11 +63,7 @@ body {
     height: 30px;
     font-family: Tahoma, Geneva, sans-serif;
     background-color: #FFFFFF;
-    border: 2px dashed #EEEEFF;
-    color: #CCCCFF;
+    border: 3px dashed #AAAAFF;
+    color: #AAAAFF;
+    outline: none;
   }
-
-    #go:hover {
-      border: 2px dashed #AAAAFF;
-      color: #AAAAFF;
-    }

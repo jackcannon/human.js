@@ -4,7 +4,7 @@ var http    = require('http');
 
 var app = express.createServer(express.logger());
 
-var path = __dirname + '/node_modules/human';
+var path = __dirname + '/humanjs';
 
 app.use(express.static(path));
 
