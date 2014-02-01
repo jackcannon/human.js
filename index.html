@@ -3,14 +3,17 @@
   <head>
     <title>Human.js</title>
     <link rel="icon" href="img/logo-smaller.png" type="image/png">
-    <link href='http://fonts.googleapis.com/css?family=Poiret+One|Ubuntu|Josefin+Slab|Julius+Sans+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/main.css">
   </head>
   <body>
     <canvas id="display"></canvas>
     <div id="controls">
       <textarea id="input"></textarea>
-      <input type="button" value="Go" id="go"></input>
+      <div id="buttons">
+        <input type="button" value="Go" id="go"></input>
+        <input type="button" value="Clear" id="clear"></input>
+      </div>
     </div>
 
     <script src="http://code.jquery.com/jquery-latest.js"></script>
@@ -35,13 +38,27 @@
         y: 0
       });
 
+      var colors = {
+        male: {
+          light: [150, 150, 255],
+          dark: [100, 100, 255]
+        },
+        female: {
+          light: [255, 175, 175],
+          dark: [255, 125, 125]
+        }
+      };
+
       function doProcessing(processing) {
 
         processing.setup = function() {
-          font = processing.createFont('Julius Sans One');
+          font = processing.createFont('Ubuntu');
           processing.textFont(font, 18);
           processing.frameRate(12);
-        }
+
+          processing.size($('#display').width(), $('#display').height());
+          processing.background(255);
+        };
 
         processing.draw = function () {
           processing.size($('#display').width(), $('#display').height());
@@ -68,14 +85,19 @@
             for(var ver = 1; ver < Math.ceil(pH / spacing); ver++) {
               processing.line(0, (ver * spacing), pW, (ver * spacing));
             }
-          }
+          };
+
+          function setColor(gender, light) {
+            processing.fill(colors[gender][light][0], colors[gender][light][1] , colors[gender][light][2]);
+            processing.stroke(colors[gender][light][0], colors[gender][light][1] , colors[gender][light][2]);
+          };
 
           function drawFloor() {
             processing.fill(230 , 230 , 230);
             processing.stroke(230 , 230 , 230);
             processing.strokeWeight(3);
-            processing.line(0, centreY, processing.width, centreY);
-          }
+            processing.line(0, centreY + 60, processing.width, centreY + 60);
+          };
 
           function crosshair() {
             processing.fill(128 , 128 , 128);
@@ -84,57 +106,36 @@
             var shift = -2;
             processing.line(centreX + shift, centreY - 10 + shift, centreX + shift, centreY + 10 + shift);
             processing.line(centreX - 10 + shift, centreY + shift, centreX + 10 + shift, centreY + shift);
-          }
+          };
 
           function drawPoint(x, y, gender) { //dont apply centreX/centreY, do apply obj.x/obj.y beforehand
-            if(gender == 'male') {
-              processing.fill(200 , 200 , 255);
-              processing.stroke(200 , 200 , 255);
-              processing.strokeWeight(1);
-            } else if (gender == 'female') {
-              processing.fill(255 , 210 , 210);
-              processing.stroke(255 , 210 , 210);
-              processing.strokeWeight(1);
-            }
+            setColor(gender, 'light');
+            processing.strokeWeight(1);
 
             var pointX = centreX + x - 2;
             var pointY = centreY + y - 2;
 
             processing.ellipse(pointX, pointY, 4, 4);
-          }
+          };
 
           function drawLine(x1, y1, x2, y2, gender) {
-            if (gender == 'male') {
-              processing.fill(150 , 150 , 255);
-              processing.stroke(150 , 150 , 255);
-            } else if (gender == 'female') {
-              processing.fill(255 , 175 , 175);
-              processing.stroke(255 , 175 , 175);
-            }
+            setColor(gender, 'dark');
             processing.strokeWeight(2);
             processing.line(centreX + x1 - 2, centreY + y1 - 2, centreX + x2 - 2, centreY + y2 - 2);
-          }
+          };
 
-          function text(x,y,text,gender,type) { // type == 'header' || 'speech'
-            if(gender == 'male') {
-              processing.fill(150 , 150 , 255);
-              processing.stroke(150 , 150 , 255);
-            } else {
-              processing.fill(255 , 175 , 175);
-              processing.stroke(255 , 175 , 175);
-            }
+          function text(x, y, text, gender, type) { // type == 'header' || 'speech'
+            setColor(gender, 'dark');
             if(type == 'header') {
-              font = processing.createFont('Ubuntu');
               processing.textFont(font, 14);
             } else if (type == 'speech') {
-              font = processing.createFont('Ubuntu');
               processing.textFont(font, 11);
             }
 
             processing.textAlign('CENTER', 'CENTER');
             var textWidth = processing.textWidth(text);
             processing.text( text , centreX + x - (textWidth / 2) - 2 , centreY + y - 2 );
-          }
+          };
 
           // grid(50, 240);
           // crosshair();
@@ -152,7 +153,7 @@
 
             for(var p in box[obj].points) {
               var ip = box[obj].getCoor(p);
-              drawPoint( ip.x , ip.y , box[obj].gender);
+              drawPoint(ip.x, ip.y, box[obj].gender);
             }
 
             //do text
@@ -168,22 +169,36 @@
       var processingInstance = new Processing(canvas, doProcessing);
 
       var execute = function () {
+        $('#go').attr('disabled', 'disabled');
+        setTimeout(function () {
+          $('#go').attr('disabled', false);
+        }, 1000);
+
         return (box.length > 0) ? function() {
           var stuff = eval($('#input').val());
           // if(stuff) console.log(stuff);
         }.bind(box[0])() : null;
-      }
+      };
 
       $('#go').click(execute);
 
-      $("#input, #display").hover(
-        function () {
-          $('#input').css({"border-top": "2px dashed #AAAAFF"});
-        },
-        function () {
-          $('#input').css({"border-top": "2px dashed #EEEEFF"});
-        }
-      );
+      $('#clear').click(function () {
+        $('#clear').attr('disabled', 'disabled');
+        setTimeout(function () {
+          $('#clear').attr('disabled', false);
+        }, 500);
+
+        $('#input').val('');
+      })
+
+      // $("#input, #display").hover(
+      //   function () {
+      //     $('#input').css({"border-top": "2px dashed rgb(65, 65, 255)"});
+      //   },
+      //   function () {
+      //     $('#input').css({"border-top": "2px dashed rgb(100, 100, 255)"});
+      //   }
+      // );
 
       $('#input').keydown(function (e) {
         if (e.keyCode == 13 && e.shiftKey) {
@@ -205,7 +220,7 @@
             box.push(window[v]);
           }
         }
-      }
+      };
       putHumansInBox();
       var boxLoop = setInterval(putHumansInBox, 500);
 
