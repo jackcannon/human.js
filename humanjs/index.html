@@ -7,12 +7,216 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
   </head>
   <body>
-    <canvas id="display"></canvas>
-    <div id="controls">
-      <textarea id="input"></textarea>
-      <div id="buttons">
-        <input type="button" value="Go" id="go"></input>
-        <input type="button" value="Clear" id="clear"></input>
+    <div id="sidebar">
+      <div id="sidebarContents">
+        <input type="button" value="<<" id="hideSidebar"></input><br/>
+        <h1>Human JS</h1>
+        <h2>High level functions</h2>
+        <div class="sidebarSection">
+          <h3>Human.prototype.say(string)</h3>
+          <ul><li><span class="bold">string</span> - What the human should say. Required.</li></ul>
+          <p>Allows the Human to speak.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.wave()</h3>
+          <p>The human waves it's "main" hand, in a welcoming manner.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.dance(type)</h3>
+          <ul><li><span class="bold">type</span> - The type of dance to perform. Optional.</li></ul>
+          <p>The human dances one of the three dances: robot, sway and travolta.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.robot()</h3>
+          <p>The human dances the robot.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.sway(times)</h3>
+          <ul><li><span class="bold">times</span> - The number of times to sway. Optional.</li></ul>
+          <p>The human sways side to side.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.travolta(times)</h3>
+          <ul><li><span class="bold">times</span> - The number of times to point up. Optional.</li></ul>
+          <p>The human mimics John Travolta in Saturday Night Fever.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.clap(times)</h3>
+          <ul><li><span class="bold">times</span> - The number of times to clap. Optional.</li></ul>
+          <p>The human claps his/her hands together.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.tapFoot(times, side)</h3>
+          <ul>
+            <li><span class="bold">times</span> - The number of times to clap. Optional.</li>
+            <li><span class="bold">side</span> - Which side to tap foot on ('left' or 'right'). Optional.</li>
+          </ul>
+          <p>The human taps his/her foot on the ground.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.handsOnHips(numOfSeconds)</h3>
+          <ul><li><span class="bold">numOfSeconds</span> - The number of seconds to have hands of hips. Optional.</li></ul>
+          <p>The human places both hands on his/her hips.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.scratchHead(side)</h3>
+          <ul><li><span class="bold">side</span> - Which side to scratch head on ('left' or 'right'). Optional.</li></ul>
+          <p>The human scratches the top of his/her head.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.prototype.punchAir()</h3>
+          <p>The human punches the air in celebration.</p>
+        </div>
+        <h2>Properties and Support functions</h2>
+        <div class="sidebarSection">
+          <h3>Human.x</h3>
+          <p>The x value of the Human's position.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.y</h3>
+          <p>The y value of the Human's position.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.gender</h3>
+          <p>The gender of the Human. 'male' or 'female'.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.orientation</h3>
+          <p>The side preference of the Human. 'left' or 'right'.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.universe</h3>
+          <p>The universe in which the Human operates. Optional.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.name</h3>
+          <p>The name of the Human.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.saying</h3>
+          <p>What the human is currently saying.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.behaviour</h3>
+          <p>An object of various lower-priority settings.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.points</h3>
+          <p>The details of the various points on the Human's skeleton.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.defaults</h3>
+          <p>The default details of the various points on the Human's skeleton.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.getCoor(point, addPosition)</h3>
+          <ul>
+            <li><span class="bold">point</span> - The name of the point on the skeleton.</li>
+            <li><span class="bold">addPosition</span> - Boolean on whether to add the Human's position to the coordinate.</li>
+          </ul>
+          <p>Returns a coordinate for the given point.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.eventListeners</h3>
+          <p>The current event listeners.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.doing</h3>
+          <p>Array of what Human is doing.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.fireEvent(event, value, sf)</h3>
+          <ul>
+            <li><span class="bold">event</span> - What the human is doing. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">value</span> - Any value to pass on to listener. Optional.</li>
+            <li><span class="bold">sf</span> - Whether this is start of event, or the end (i.e. finish).</li>
+          </ul>
+          <p>Iterates through all Humans in universe, calling any eventListeners that meet the given requirements.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.addListener(event, func)</h3>
+          <ul>
+            <li><span class="bold">event</span> - What to listen for. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">func</span> - Function to perform on event</li>
+          </ul>
+          <p>Adds the given details to human's current event listeners. Listeners listen to other humans in universe.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.removeListener(event)</h3>
+          <ul><li><span class="bold">event</span> - What event to remove listener for.</li></ul>
+          <p>Removes the given details from human's current event listeners. Listeners listen to other humans in universe.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.startDoing(act, value)</h3>
+          <ul>
+            <li><span class="bold">act</span> - What the human is doing. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">value</span> - Some value to pass on to eventListeners. Optional.</li>
+          </ul>
+          <p>Adds act to Human's doing list, and fires relevant listeners.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.finishDoing(act, value)</h3>
+          <ul>
+            <li><span class="bold">act</span> - What the human is doing. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">value</span> - Some value to pass on to eventListeners. Optional.</li>
+          </ul>
+          <p>Removes act from Human's doing list, and fires relevant listeners.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.isDoing(act)</h3>
+          <ul><li><span class="bold">act</span> - What the human is supposedly doing. e.g. 'wave', 'dance', etc.</li></ul>
+          <p>Returns whether or not Human is doing given act.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.perform(tasks, done)</h3>
+          <ul>
+            <li><span class="bold">tasks</span> - Array of tasks to do.[ { timer: 10, func: function(cb) {} } ]</li>
+            <li><span class="bold">done</span> - Function to call when completed. Optional.</li>
+          </ul>
+          <p>A way of timing steps between several actions. Each object in the tasks array should have a timer value (the number of milliseconds since last step to wait before doing this step) and func (what to do during that step). See examples of this in the code for high-level functions.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.tween(point, newValue, time, cb)</h3>
+          <ul>
+            <li><span class="bold">point</span> - The name of the point on the skeleton.</li>
+            <li><span class="bold">newValue</span> - What to change the value to.</li>
+            <li><span class="bold">time</span> - How long to take in milliseconds. Optional.</li>
+            <li><span class="bold">cb</span> - Function to call when completed. Optional</li>
+          </ul>
+          <p>Slowly moves the point to the new value over the given time. This means that movement is fluid looking rather than robotic and jagged.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.multiTween(arr, clbck)</h3>
+          <ul>
+            <li><span class="bold">arr</span> - Arr of objects containing information on what to change, and how long.</li>
+            <li><span class="bold">clbck</span> - Function to call when completed. Optional</li>
+          </ul>
+          <p>Tweens multiple points at once. See examples of this in the code for high-level functions.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.pointToCoor(pointName, targetCoor, timer, intersectPoint)</h3>
+          <ul>
+            <li><span class="bold">pointName</span> - The name of the point on the skeleton.</li>
+            <li><span class="bold">targetCoor</span> - Coordinate of where to place point.</li>
+            <li><span class="bold">timer</span> - How long to take if output is being used for MultiTween. Optional.</li>
+            <li><span class="bold">intersectPoint</span> - Which intersect point to use. Optional</li>
+          </ul>
+          <p>Moves given point to given coordinate. Moves 2 points to get position right (e.g. if moving rightWrist, rightElbow will also move).</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.reset()</h3>
+          <p>Sets points values back to default.</p>
+        </div>
+      </div>
+    </div>
+    <div id="main">
+      <canvas id="display"></canvas>
+      <div id="controls">
+        <textarea id="input"></textarea>
+        <div id="buttons">
+          <input type="button" value="Go" id="go"></input>
+          <input type="button" value="Clear" id="clear"></input>
+        </div>
       </div>
     </div>
 
@@ -22,6 +226,34 @@
     <script src="js/human.js"></script>
 
     <script>
+      var sidebar = {
+        show: function (e) {
+          $('#main').removeClass('full');
+          $('#sidebar').removeClass('hide');
+          $('#sidebarContents').show();
+          setTimeout(function () {
+            $('#hideSidebar').click(function (e) { console.log(e); sidebar.hide(); });
+          }, 500);
+        },
+        hide: function () {
+          $('#main').addClass('full');
+          $('#sidebar').addClass('hide');
+          setTimeout(function () {
+            $('#sidebar.hide').click(function (e) {
+              if ($(e.target).attr('id') !== 'hideSidebar') {
+                sidebar.show();
+              }
+            });
+            $('#sidebarContents').hide();
+          }, 500);
+        }
+      }
+      $('#hideSidebar').click(function () { sidebar.hide(); });
+
+      setTimeout(function () {
+        sidebar.hide();
+      }, 1000);
+
       var box = [];
 
       var John = new Human({

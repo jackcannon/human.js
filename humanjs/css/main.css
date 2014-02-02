@@ -1,13 +1,27 @@
 *, *:before, *:after {
   -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
   font-family: Geneva, Tahoma, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
 }
 
 html, body {
   padding: 0;
   margin: 0;
   width: 99%;
-  height: 98%;
+  height: 100%;
   font-size: 14px;
 }
 
@@ -17,79 +31,138 @@ html {
 }
 
 body {
-  padding: 5px;
+  padding: 0;
   text-align: center;
+  height: 100%;
 }
 
-#display {
-  padding: 0;
-  margin: 0 auto;
-  width: 80%;
-  height: 80%;
-  vertical-align: middle;
-  outline: none;
-  border-radius: 5px;
-}
+#sidebar {
+  width: 25%;
+  height: 100%;
+  float: left;
+  background-color: rgb(200, 200, 255);
+  /*transition: width 0.5s;*/
+  overflow-y: scroll;
+  word-wrap: break-word;
 
-  #display:focus {
-    outline: none;
+  position: absolute;
+  left: 0%;
+  transition: left 0.5s;
+}
+  #sidebar.hide {
+    /*width: 2%;*/
+    cursor: pointer;
+    overflow-y: hidden;
+    /*transition: width 0.5s;*/
+
+    left: -23%;
+    transition: left 0.5s;
+  }
+  #sidebarContents {
+    width: 100%;
+  }
+    #hideSidebar {
+      float: right;
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      outline: none;
+    }
+    .sidebarSection {
+      background-color: rgba(0, 0, 0, 0.12);
+      margin: 3px 5px 15px 5px;
+      border-radius: 5px;
+    }
+      .sidebarSection h3,
+      .sidebarSection ul {
+        margin-bottom: 15px;
+      }
+
+#main {
+  float: right;
+  width: 75%;
+  height: 100%;
+  transition: width 0.5s;
+}
+  #main.full {
+    width: 98%;
+    transition: width 0.5s;
   }
 
-#controls {
-  padding: 0;
-  margin: 0 auto;
-  width: 80%;
-  height: 20%;
-}
-
-  textarea {
+  #display {
     padding: 0;
-    margin: 0;
-    width: 85%;
-    height: 100%;
-    border: 0;
-    font-family: monospace;
-    font-size: 14px;
-    background-color: rgba(200, 200, 235, 0.65);
-    float: left;
+    margin: 0 auto;
+    width: 80%;
+    height: 80%;
+    vertical-align: middle;
+    outline: none;
+    border-radius: 5px;
   }
 
-    textarea:focus {
-      border: 0;
+    #display:focus {
       outline: none;
     }
 
-  #buttons {
-    width: 10%;
-    height: 100%;
-    float: right;
+  #controls {
+    padding: 0;
+    margin: 0 auto;
+    width: 80%;
+    height: 20%;
   }
-    #buttons input[type=button] {
+
+    textarea {
       padding: 0;
-      margin: 3px 0;
-      width: 100%;
-      height: 45%;
-      font-size: 1.5em;
-      background-color: rgb(218, 218, 241);
-      color: rgb(100, 100, 255);
-      outline: none;
-      border: 2px solid rgb(100, 100, 255);
-      border-radius: 20px;
-      box-shadow: -2px -2px 1px 1px rgba(0, 0, 0, 0.25) inset;
-      text-shadow: 2px 2px rgba(0, 0, 0, 0.15);
-      font-family: Geneva, Tahoma, sans-serif;
+      margin: 0;
+      width: 85%;
+      height: 100%;
+      border: 0;
+      font-family: monospace;
+      font-size: 14px;
+      background-color: rgba(200, 200, 235, 0.65);
+      float: left;
     }
-      #buttons input[type=button]:hover {
-        border: 2px solid rgb(65, 65, 255);
-        color: rgb(65, 65, 255);
+
+      textarea:focus {
+        border: 0;
+        outline: none;
       }
-      #buttons input[type=button]:disabled {
-        border: 2px solid rgb(165, 165, 165);
-        color: rgb(165, 165, 165);
-        box-shadow: none;
-        text-shadow: none;
+
+    #buttons {
+      width: 10%;
+      height: 100%;
+      float: right;
+    }
+      #buttons input[type=button] {
+        padding: 0;
+        margin: 3px 0;
+        width: 100%;
+        height: 45%;
+        font-size: 1.5em;
+        background-color: rgb(218, 218, 241);
+        color: rgb(100, 100, 255);
+        outline: none;
+        border: 2px solid rgb(100, 100, 255);
+        border-radius: 20px;
+        box-shadow: -2px -2px 1px 1px rgba(0, 0, 0, 0.25) inset;
+        text-shadow: 2px 2px rgba(0, 0, 0, 0.15);
+        font-family: Geneva, Tahoma, sans-serif;
       }
-      #buttons input[type=button]:last-child {
-        position: relative;
-        bottom: 0;
-      }
+        #buttons input[type=button]:hover {
+          border: 2px solid rgb(65, 65, 255);
+          color: rgb(65, 65, 255);
+        }
+        #buttons input[type=button]:disabled {
+          border: 2px solid rgb(165, 165, 165);
+          color: rgb(165, 165, 165);
+          box-shadow: none;
+          text-shadow: none;
+        }
+        #buttons input[type=button]:last-child {
+          position: relative;
+          bottom: 0;
+        }
+
+.bold {
+  font-weight: bold;
+}
