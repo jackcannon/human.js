@@ -146,6 +146,7 @@ var Human = (function () {
         ]
       }
     };
+    this.defaults = HumanJsUtils.clone(this.points);
 
     this.getCoor = function(point, addPosition) {
       var human = this;
@@ -167,9 +168,7 @@ var Human = (function () {
       return getPoint(base.x, base.y, human.points[point].length, human.points[point].angle);
     };
 
-    this.defaults = HumanJsUtils.clone(this.points);
 
-    this.events = {};
     this.eventListeners = {};
 
     this.doing = [];
@@ -719,7 +718,7 @@ var Human = (function () {
     var shoulderCoor = self.getCoor('leftShoulder');
 
 
-    var handOnHip = self.pointToCoor('rightWrist', {x: hipCoor.x + 3, y: hipCoor.y}, speed);
+    var handOnHip = self.pointToCoor('rightWrist', {x: hipCoor.x + 5, y: hipCoor.y}, speed);
 
     var handUp = self.pointToCoor('leftWrist', {x: shoulderCoor.x - 20, y: shoulderCoor.y - 40}, speed);
     var handDown = self.pointToCoor('leftWrist', {x: shoulderCoor.x + 20, y: shoulderCoor.y + 40}, speed);
@@ -883,7 +882,7 @@ var Human = (function () {
     var pointASlow = self.pointToCoor(useSide + 'Wrist', toA, 500);
 
     var toB = {x: crownCoor.x + coorAlter.x, y: crownCoor.y - coorAlter.y};
-    var pointB = self.pointToCoor(useSide + 'Wrist', toB, 350, 1);
+    var pointB = self.pointToCoor(useSide + 'Wrist', toB, 350, (useSide === 'right')? 1 : 0);
 
     this.perform([
       { timer: 0, multiTween: pointASlow },
@@ -899,12 +898,10 @@ var Human = (function () {
     });
   };
 
-  Human.prototype.punchAir = function (times) {
+  Human.prototype.punchAir = function () {
     var self = this;
     if(this.isDoing('punchAir')) return;
     this.startDoing('punchAir');
-
-    if(typeof times !== 'number') var times = 3;
 
     var oldp = HumanJsUtils.clone(this.points);
 
