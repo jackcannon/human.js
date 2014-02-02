@@ -40,7 +40,7 @@ body {
   width: 25%;
   height: 100%;
   float: left;
-  background-color: rgb(200, 200, 255);
+  background-color: rgb(157, 188, 230);
   /*transition: width 0.5s;*/
   overflow-y: scroll;
   word-wrap: break-word;
@@ -68,6 +68,11 @@ body {
       font-weight: bold;
       cursor: pointer;
       outline: none;
+      font-size: 1em;
+      padding: 0px;
+      margin: 0px;
+      color: black;
+      text-shadow: none;
     }
     .sidebarSection {
       background-color: rgba(0, 0, 0, 0.12);
@@ -77,6 +82,13 @@ body {
       .sidebarSection h3,
       .sidebarSection ul {
         margin-bottom: 15px;
+      }
+      .sidebarSection input[type=button] {
+        float: right;
+        position: relative;
+        top: 0px;
+        right: 0px;
+        padding: 0 2px;
       }
 
 #main {
@@ -134,26 +146,15 @@ body {
       float: right;
     }
       #buttons input[type=button] {
+        font-size: 1.4em;
         padding: 0;
         margin: 3px 0;
         width: 100%;
         height: 45%;
-        font-size: 1.5em;
-        background-color: rgb(218, 218, 241);
-        color: rgb(100, 100, 255);
-        outline: none;
-        border: 2px solid rgb(100, 100, 255);
-        border-radius: 20px;
-        box-shadow: -2px -2px 1px 1px rgba(0, 0, 0, 0.25) inset;
-        text-shadow: 2px 2px rgba(0, 0, 0, 0.15);
-        font-family: Geneva, Tahoma, sans-serif;
       }
-        #buttons input[type=button]:hover {
-          border: 2px solid rgb(65, 65, 255);
-          color: rgb(65, 65, 255);
-        }
         #buttons input[type=button]:disabled {
-          border: 2px solid rgb(165, 165, 165);
+          border: 2px solid rgba(0, 0, 0, 0.5);
+          background-color: rgb(90, 105, 130);
           color: rgb(165, 165, 165);
           box-shadow: none;
           text-shadow: none;
@@ -166,3 +167,20 @@ body {
 .bold {
   font-weight: bold;
 }
+
+input[type=button] {
+  font-size: 1em;
+  color: rgb(220, 220, 230);
+  background-color: rgb(75, 120, 180);
+  border-radius: 5px;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  padding: 5px;
+  cursor: pointer;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.1);
+  outline: none;
+  margin: 2px;
+}
+  input[type=button]:hover {
+    text-shadow: none;
+    background-color: rgb(50, 80, 120);
+  }
