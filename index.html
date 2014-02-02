@@ -13,39 +13,47 @@
         <h1>Human JS</h1>
         <h2>High level functions</h2>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="say" />
           <h3>Human.prototype.say(string)</h3>
           <ul><li><span class="bold">string</span> - What the human should say. Required.</li></ul>
           <p>Allows the Human to speak.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="wave" />
           <h3>Human.prototype.wave()</h3>
           <p>The human waves it's "main" hand, in a welcoming manner.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="dance" />
           <h3>Human.prototype.dance(type)</h3>
           <ul><li><span class="bold">type</span> - The type of dance to perform. Optional.</li></ul>
           <p>The human dances one of the three dances: robot, sway and travolta.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="robot" />
           <h3>Human.prototype.robot()</h3>
           <p>The human dances the robot.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="sway" />
           <h3>Human.prototype.sway(times)</h3>
           <ul><li><span class="bold">times</span> - The number of times to sway. Optional.</li></ul>
           <p>The human sways side to side.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="travolta" />
           <h3>Human.prototype.travolta(times)</h3>
           <ul><li><span class="bold">times</span> - The number of times to point up. Optional.</li></ul>
           <p>The human mimics John Travolta in Saturday Night Fever.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="clap" />
           <h3>Human.prototype.clap(times)</h3>
           <ul><li><span class="bold">times</span> - The number of times to clap. Optional.</li></ul>
           <p>The human claps his/her hands together.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="tapFoot" />
           <h3>Human.prototype.tapFoot(times, side)</h3>
           <ul>
             <li><span class="bold">times</span> - The number of times to clap. Optional.</li>
@@ -54,16 +62,19 @@
           <p>The human taps his/her foot on the ground.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="handsOnHips" />
           <h3>Human.prototype.handsOnHips(numOfSeconds)</h3>
           <ul><li><span class="bold">numOfSeconds</span> - The number of seconds to have hands of hips. Optional.</li></ul>
           <p>The human places both hands on his/her hips.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="scratchHead" />
           <h3>Human.prototype.scratchHead(side)</h3>
           <ul><li><span class="bold">side</span> - Which side to scratch head on ('left' or 'right'). Optional.</li></ul>
           <p>The human scratches the top of his/her head.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="punchAir" />
           <h3>Human.prototype.punchAir()</h3>
           <p>The human punches the air in celebration.</p>
         </div>
@@ -249,10 +260,29 @@
         }
       }
       $('#hideSidebar').click(function () { sidebar.hide(); });
-
       setTimeout(function () {
         sidebar.hide();
       }, 1000);
+
+      var codeExamples = {
+        say: "John.say('This is a test!')\nJane.say('This is another test!')",
+        wave: "John.wave();\nJane.wave();",
+        dance: "John.dance();\nJane.dance('robot')",
+        robot: "John.robot();\nJane.robot();",
+        sway: "John.sway();\nJane.sway(10);",
+        travolta: "John.travolta();\nJane.travolta(10);",
+        clap: "John.clap();\nJane.clap(10);",
+        tapFoot: "John.tapFoot();\nJane.tapFoot(10, 'left');",
+        handsOnHips: "John.handsOnHips();\nJane.handsOnHips(10);",
+        scratchHead: "John.scratchHead();\nJane.scratchHead('left')",
+        punchAir: "John.punchAir();\nJane.punchAir();"
+      };
+
+      $('.codeExample').click(function (e) {
+        var code = unescape($(this).attr('data-name'));
+        $('#input').val(codeExamples[code]);
+        setTimeout(execute, 100);
+      });
 
       var box = [];
 
