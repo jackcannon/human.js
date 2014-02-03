@@ -179,14 +179,16 @@
           <p>Returns whether or not Human is doing given act.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="perform" />
           <h3>Human.perform(tasks, done)</h3>
           <ul>
             <li><span class="bold">tasks</span> - Array of tasks to do.[ { timer: 10, func: function(cb) {} } ]</li>
             <li><span class="bold">done</span> - Function to call when completed. Optional.</li>
           </ul>
-          <p>A way of timing steps between several actions. Each object in the tasks array should have a timer value (the number of milliseconds since last step to wait before doing this step) and func (what to do during that step). See examples of this in the code for high-level functions.</p>
+          <p>A way of timing steps between several actions. Each object in the tasks array should have a timer value (the number of milliseconds since last step to wait before doing this step) and func (what to do during that step).</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="tween" />
           <h3>Human.tween(point, newValue, time, cb)</h3>
           <ul>
             <li><span class="bold">point</span> - The name of the point on the skeleton.</li>
@@ -197,14 +199,16 @@
           <p>Slowly moves the point to the new value over the given time. This means that movement is fluid looking rather than robotic and jagged.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="multiTween" />
           <h3>Human.multiTween(arr, clbck)</h3>
           <ul>
             <li><span class="bold">arr</span> - Arr of objects containing information on what to change, and how long.</li>
             <li><span class="bold">clbck</span> - Function to call when completed. Optional</li>
           </ul>
-          <p>Tweens multiple points at once. See examples of this in the code for high-level functions.</p>
+          <p>Tweens multiple points at once.</p>
         </div>
         <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="pointToCoor" />
           <h3>Human.pointToCoor(pointName, targetCoor, timer, intersectPoint)</h3>
           <ul>
             <li><span class="bold">pointName</span> - The name of the point on the skeleton.</li>
@@ -275,7 +279,11 @@
         tapFoot: "John.tapFoot();\nJane.tapFoot(10, 'left');",
         handsOnHips: "John.handsOnHips();\nJane.handsOnHips(10);",
         scratchHead: "John.scratchHead();\nJane.scratchHead('left')",
-        punchAir: "John.punchAir();\nJane.punchAir();"
+        punchAir: "John.punchAir();\nJane.punchAir();",
+        perform: "John.perform([\n  {\n    timer: 0,\n    func: function (cb) {\n      this.wave();\n      cb();\n    }\n  },\n  {\n    timer: 1700,\n    multiTween: [\n      {point: 'rightElbow', value: 0.4, timer: 500},\n      {point: 'rightWrist', value: 0.6, timer: 500},\n    ]\n  },\n  {\n    timer: 0,\n    multiTween: [\n      {point: 'rightElbow', value: John.defaults.rightElbow.angle, timer: 500},\n      {point: 'rightWrist', value: John.defaults.rightWrist.angle, timer: 500},\n    ]\n  }\n]);",
+        tween: "John.tween('rightWrist', 0.75, 500, function () {\n  John.tween('rightWrist', John.defaults.rightWrist.angle, 500);\n});",
+        multiTween: "John.multiTween([\n  {point: 'rightElbow', value: 0.4, timer: 500},\n  {point: 'rightWrist', value: 0.85, timer: 500},\n], function () {\n  John.multiTween([\n    {point: 'rightElbow', value: John.defaults.rightElbow.angle, timer: 500},\n    {point: 'rightWrist', value: John.defaults.rightWrist.angle, timer: 500},\n  ]);\n});",
+        pointToCoor: "var hipCoor = John.getCoor('pelvis');\nvar nextToHip = {x: hipCoor.x + 5, y: hipCoor.y};\n\nvar movement = John.pointToCoor('rightWrist', nextToHip, 500);\nJohn.multiTween(movement, function () {\n  John.multiTween(John.defaults);\n});"
       };
 
       $('.codeExample').click(function (e) {
