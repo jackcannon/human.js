@@ -2,7 +2,7 @@
   "name": "human",
   "description": "A Homo Sapien javascript object",
   "keywords": [],
-  "version": "0.1.2",
+  "version": "0.1.2.1",
   "dependencies": {
     "async": "*"
   },
