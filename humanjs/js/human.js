@@ -231,7 +231,7 @@ var Human = (function () {
     };
 
     this.finishDoing = function (act, value) { // pass in value as null to fire event
-      var index = HumanJsUtils.inArray(act, this.doing);
+      var index = this.doing.indexOf(act);
       if( this.isDoing(act) ) {
         this.doing.splice(index, 1);
       }
@@ -239,7 +239,7 @@ var Human = (function () {
     };
 
     this.isDoing = function (act) {
-      return !!( HumanJsUtils.inArray(act, this.doing) !== -1 );
+      return !!(this.doing.indexOf(act) !== -1);
     };
 
     this.perform = function (tasks, done) { // tasks should be an array of things to do. done is a final callback.
@@ -419,7 +419,7 @@ var Human = (function () {
     var sentences = text.replace(/\.{1,}\s{0,}/g, '.{BREAK}').replace(/\!{1,}\s{0,}/g, '!{BREAK}').replace(/\?{1,}\s{0,}/g, '?{BREAK}').split('{BREAK}');
     var arr = [];
     async.map(sentences, function(item, callback) {
-      var number = HumanJsUtils.inArray(item, sentences);
+      var number = sentences.indexOf(item);
       callback(null, {
         func: function (cb) {
           this.saying = item.toString();
@@ -515,7 +515,7 @@ var Human = (function () {
   Human.prototype.dance = function (type) {
     var dances = ['robot', 'sway', 'travolta'];
     if(!type) return this[dances[Math.floor(Math.random() * dances.length)]]();
-    if(HumanJsUtils.inArray(type, dances) !== -1) {
+    if(dances.indexOf(type) !== -1) {
       return this[type]();
     }
   }
@@ -918,9 +918,148 @@ var Human = (function () {
     });
   };
 
+  Human.prototype.brushShoulder = function (side) { // side is which shoulder to use (uses the opposite wrist)
+    var self = this;
+
+    if(this.isDoing('brushShoulder')) return;
+    self.startDoing('brushShoulder');
+
+    var oldp = HumanJsUtils.clone(this.points);
+
+    var shoulderSide = side || HumanJsUtils.oppositeSide(self.orientation);
+    var armSide = HumanJsUtils.oppositeSide(shoulderSide);
+
+    var neck = self.getCoor('neck');
+    var shoulder = self.getCoor(shoulderSide + 'Shoulder');
+    var difference = {x: shoulder.x - neck.x, y: shoulder.y - neck.y};
+    var to = {x: shoulder.x + (difference.x / 2), y: shoulder.y + (difference.y / 2)};
+
+    if(shoulderSide === 'right') {
+      neck = {x: neck.x + 3, y: neck.y - 3};
+      to = {x: to.x + 3, y: to.y - 3};
+    } else {
+      neck = {x: neck.x - 3, y: neck.y - 3};
+      to = {x: to.x - 3, y: to.y - 3};
+    }
+
+    self.perform([
+      {
+        timer: 0,
+        multiTween: self.pointToCoor(armSide + 'Wrist', neck, 500)
+      },
+      {
+        timer: 150,
+        multiTween: self.pointToCoor(armSide + 'Wrist', to, 150)
+      },
+      {
+        timer: 100,
+        multiTween: oldp
+      }
+    ], function () {
+      self.finishDoing('brushShoulder');
+    });
+  };
+
+  Human.prototype.shrug = function () {
+    var self = this;
+    if(this.isDoing('shrug')) return;
+    self.startDoing('shrug');
+
+    var oldp = HumanJsUtils.clone(this.points);
+
+    self.perform([
+      {
+        timer: 0,
+        multiTween: [
+          {point: 'leftElbow', value: 0.51, timer: 150},
+          {point: 'rightElbow', value: 0.49, timer: 150},
+          {point: 'leftWrist', value: 0.62, timer: 150},
+          {point: 'rightWrist', value: 0.42, timer: 150}
+        ]
+      },
+      {
+        timer: 0,
+        multiTween: [
+          {point: 'rightShoulder', value: 0.22, timer: 100},
+          {point: 'leftShoulder', value: 0.78, timer: 100}
+        ]
+      },
+      {
+        timer: 150,
+        multiTween: oldp
+      }
+    ], function () {
+      self.finishDoing('shrug');
+    });
+  };
+
+  Human.prototype.airGuitar = function () {
+    var self = this;
+    if(this.isDoing('airGuitar')) return;
+    self.startDoing('airGuitar');
+
+    var oldp = HumanJsUtils.clone(this.points);
+
+    var strumHand = self.orientation;
+    var fretHand = HumanJsUtils.oppositeSide(strumHand);
+
+    var neck = self.getCoor('neck');
+    var hip = self.getCoor('pelvis');
+    var centre = {x: hip.x, y: ((hip.y - neck.y) * 0.75) + neck.y};
+
+    var strumUpCoor = {x: (strumHand == 'left')? centre.x - 10 : centre.x + 10, y: centre.y - 5};
+    var strumDownCoor = {x: (strumHand == 'left')? centre.x - 10 : centre.x + 10, y: centre.y + 5};
+    var fretHandLowCoor = {x: (fretHand == 'left')? centre.x - 40 : centre.x + 40, y: centre.y - 20 };
+    var fretHandHighCoor = {
+      x: ((centre.x - fretHandLowCoor.x) * 0.15) +  fretHandLowCoor.x,
+      y: ((centre.y - fretHandLowCoor.y) * 0.15) +  fretHandLowCoor.y
+    };
+
+    var tasks = [];
+
+    for(var i = 0; i < 4; i++) {
+      tasks = tasks.concat([
+        {
+          timer: 0,
+          multiTween: self.pointToCoor(strumHand + 'Wrist', strumDownCoor, (i === 0)? 500 : 120).concat(self.pointToCoor(fretHand + 'Wrist', (i % 2 === 0)? fretHandLowCoor : fretHandHighCoor, (i === 0)? 500 : 120))
+        },
+        {
+          timer: 0,
+          multiTween: self.pointToCoor(strumHand + 'Wrist', strumUpCoor, 75)
+        },
+        {
+          timer: 0,
+          multiTween: self.pointToCoor(strumHand + 'Wrist', strumDownCoor, 120)
+        },
+        {
+          timer: 0,
+          multiTween: self.pointToCoor(strumHand + 'Wrist', strumUpCoor, 75)
+        }
+      ]);
+    }
+
+    tasks.push({
+      timer: 150,
+      multiTween: oldp
+    });
+
+    self.perform(tasks, function () {
+      self.finishDoing('airGuitar');
+    });
+  };
+
   var HumanJsUtils = {
     clone: function (obj) {
       return JSON.parse(JSON.stringify(obj));
+    },
+    oppositeSide: function (side) { // if given 'left', returns 'right' and vice versa
+      if(side === 'left') {
+        return 'right';
+      } else if (side === 'right') {
+        return 'left';
+      } else {
+        return false;
+      }
     },
     flipHor: function (obj) {
       var reply = {};
@@ -964,14 +1103,6 @@ var Human = (function () {
       };
       var random = Math.floor(Math.random() * 40);
       return names[gender][random];
-    },
-    inArray: function (item, arr) { // TODO: use indexOf ????
-      for(var i in arr) {
-        if(arr[i] === item) {
-          return (parseInt(i) !== 'NaN')? parseInt(i) : -1 ;
-        }
-      }
-      return -1;
     },
     contains: function (ins, key, ignoreCase) { // for strings
       if(!ins || !key) return false;
