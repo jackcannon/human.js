@@ -78,6 +78,23 @@
           <h3>Human.prototype.punchAir()</h3>
           <p>The human punches the air in celebration.</p>
         </div>
+        <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="brushShoulder" />
+          <h3>Human.prototype.brushShoulder(side)</h3>
+          <ul><li><span class="bold">side</span> - Which side shoulder to brush. Optional.</li></ul>
+          <p>The human brushes it's shoulder because he's/she's cool like that.</p>
+        </div>
+        <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="shrug" />
+          <h3>Human.prototype.shrug()</h3>
+          <p>The human shrugs his/her shoulders. How rude.</p>
+        </div>
+        <div class="sidebarSection">
+          <input type="button" class="codeExample" value="&#9658;" data-name="airGuitar" />
+          <h3>Human.prototype.airGuitar()</h3>
+          <p>The human plays the air guitar. Rock on!</p>
+        </div>
+
         <h2>Properties and Support functions</h2>
         <div class="sidebarSection">
           <h3>Human.x</h3>
@@ -269,17 +286,20 @@
       }, 1000);
 
       var codeExamples = {
-        say: "John.say('This is a test!')\nJane.say('This is another test!')",
+        say: "John.say('This is a test!');\nJane.say('This is another test!');",
         wave: "John.wave();\nJane.wave();",
-        dance: "John.dance();\nJane.dance('robot')",
+        dance: "John.dance();\nJane.dance('robot');",
         robot: "John.robot();\nJane.robot();",
         sway: "John.sway();\nJane.sway(10);",
         travolta: "John.travolta();\nJane.travolta(10);",
         clap: "John.clap();\nJane.clap(10);",
         tapFoot: "John.tapFoot();\nJane.tapFoot(10, 'left');",
         handsOnHips: "John.handsOnHips();\nJane.handsOnHips(10);",
-        scratchHead: "John.scratchHead();\nJane.scratchHead('left')",
+        scratchHead: "John.scratchHead();\nJane.scratchHead('left');",
         punchAir: "John.punchAir();\nJane.punchAir();",
+        brushShoulder: "John.brushShoulder();\nJane.brushShoulder('right');",
+        shrug: "John.shrug();\nJane.shrug();",
+        airGuitar: "John.airGuitar();\nJane.airGuitar();",
         perform: "John.perform([\n  {\n    timer: 0,\n    func: function (cb) {\n      this.wave();\n      cb();\n    }\n  },\n  {\n    timer: 1700,\n    multiTween: [\n      {point: 'rightElbow', value: 0.4, timer: 500},\n      {point: 'rightWrist', value: 0.6, timer: 500},\n    ]\n  },\n  {\n    timer: 0,\n    multiTween: [\n      {point: 'rightElbow', value: John.defaults.rightElbow.angle, timer: 500},\n      {point: 'rightWrist', value: John.defaults.rightWrist.angle, timer: 500},\n    ]\n  }\n]);",
         tween: "John.tween('rightWrist', 0.75, 500, function () {\n  John.tween('rightWrist', John.defaults.rightWrist.angle, 500);\n});",
         multiTween: "John.multiTween([\n  {point: 'rightElbow', value: 0.4, timer: 500},\n  {point: 'rightWrist', value: 0.85, timer: 500},\n], function () {\n  John.multiTween([\n    {point: 'rightElbow', value: John.defaults.rightElbow.angle, timer: 500},\n    {point: 'rightWrist', value: John.defaults.rightWrist.angle, timer: 500},\n  ]);\n});",
