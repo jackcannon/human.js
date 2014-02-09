@@ -194,18 +194,55 @@ var Human = (function () {
 
       if (typeof self.universe === 'undefined') return;
       for(var i in self.universe) {
-        if (self.universe[i] && self.universe[i] instanceof Human && self.universe[i] !== self && self.universe[i].eventListeners && self.universe[i].eventListeners[event] && typeof self.universe[i].eventListeners[event] === 'function') {
-          self.universe[i].eventListeners[event].bind(self.universe[i])(eObj);
+        if (self.universe[i] &&
+            self.universe[i] instanceof Human &&
+            self.universe[i].eventListeners &&
+            self.universe[i].eventListeners[event]) {
+
+          var list = self.universe[i].eventListeners[event];
+
+          if ((!list.justMe || (list.justMe && self.universe[i] === self)) &&
+              (!list.when || list.when === 'any' || (list.when === eObj.at))) {
+            self.universe[i].eventListeners[event].func.bind(self.universe[i])(eObj);
+          }
         }
       }
     };
 
-    this.addListener = function (event, func) {
-      this.eventListeners[event] = func;
+    this.addListener = function (event, func, rules) {
+      if(typeof rules !== 'object') var rules = {};
+      this.eventListeners[event] = {
+        justMe: rules.justMe || false, // true/false
+        when: rules.when || 'any', // 'start'/'finish'/'any'
+        func: func || function () {}
+      }
     };
 
     this.removeListener = function (event) {
       if(this.eventListeners && this.eventListeners[event]) delete this.eventListeners[event];
+    };
+
+    this.on = function (event, func) {
+      var self = this;
+      self.addListener(event, func, {
+        justMe: true,
+      });
+    };
+
+    this.onStart = function (event, func) {
+      var self = this;
+      self.addListener(event, func, {
+        justMe: true,
+        when: 'start'
+      });
+    };
+
+    this.onFinish = function (event, func) {
+      var self = this;
+      self.addListener(event, func, {
+        justMe: true,
+        when: 'finish'
+      });
     };
 
     this.addListener('say', function (event) {
@@ -219,9 +256,9 @@ var Human = (function () {
           }
         });
       }
+    }, {
+      when: 'start'
     });
-
-
 
     this.startDoing = function (act, value) {
       if( !( this.isDoing(act) ) ) {

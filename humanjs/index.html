@@ -162,12 +162,42 @@
           <p>Iterates through all Humans in universe, calling any eventListeners that meet the given requirements.</p>
         </div>
         <div class="sidebarSection">
-          <h3>Human.addListener(event, func)</h3>
+          <h3>Human.addListener(event, func, rules)</h3>
+          <ul>
+            <li><span class="bold">event</span> - What to listen for. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">func</span> - Function to perform on event</li>
+            <li><span class="bold">rules</span> - Object containing rules of when to fire. Valid properties: justMe, when</li>
+          </ul>
+          <p>Adds the given details to human's current event listeners. Listeners listen to other humans in universe unless justMe is set to true (Default: false). Listeners will fire at start and finish of action, unless when is set to 'start' or 'finish' (Default: 'any').</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.removeListener(event)</h3>
+          <ul><li><span class="bold">event</span> - What event to remove listener for.</li></ul>
+          <p>Removes the given details from human's current event listeners. Listeners listen to other humans in universe.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.on(event, func)</h3>
           <ul>
             <li><span class="bold">event</span> - What to listen for. e.g. 'wave', 'dance', etc.</li>
             <li><span class="bold">func</span> - Function to perform on event</li>
           </ul>
-          <p>Adds the given details to human's current event listeners. Listeners listen to other humans in universe.</p>
+          <p>Adds the given details to human's current event listeners. on Listeners listen to callee only. on Listeners will fire at start <span class="bold">and</span> finish of action.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.onStart(event, func)</h3>
+          <ul>
+            <li><span class="bold">event</span> - What to listen for. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">func</span> - Function to perform on event</li>
+          </ul>
+          <p>Adds the given details to human's current event listeners. onStart Listeners listen to callee only. onStart Listeners will fire at start of action only.</p>
+        </div>
+        <div class="sidebarSection">
+          <h3>Human.onFinish(event, func)</h3>
+          <ul>
+            <li><span class="bold">event</span> - What to listen for. e.g. 'wave', 'dance', etc.</li>
+            <li><span class="bold">func</span> - Function to perform on event</li>
+          </ul>
+          <p>Adds the given details to human's current event listeners. onFinish Listeners listen to callee only. onFinish Listeners will fire at end of action only.</p>
         </div>
         <div class="sidebarSection">
           <h3>Human.removeListener(event)</h3>
