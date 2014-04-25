@@ -2,6 +2,7 @@
   "name": "humanjs",
   "version": "0.0.1",
   "dependencies": {
+    "nodetime": "0.8.15",
     "human": "0.1.0",
     "express": "2.5.x",
     "connect": "2.7.2"

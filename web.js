@@ -1,3 +1,10 @@
+if(process.env.NODETIME_ACCOUNT_KEY) {
+  require('nodetime').profile({
+    accountKey: process.env.NODETIME_ACCOUNT_KEY,
+    appName: 'HumanJS' // optional
+  });
+}
+
 var express = require('express');
 var fs      = require('fs');
 var http    = require('http');
